@@ -9,7 +9,7 @@
     bottom: 10vh;
     height: 20vh;
     width: auto;
-    right: 0;
+    left: 0;
     border-radius: 20px;
 }
 
@@ -38,4 +38,23 @@ gap:10px;
     width: 40vw;
     height:20vh;
     min-width: 30vw;
+}
+
+.chatroom{
+    position: absolute;
+    height: 90vh;
+    background-color: antiquewhite;
+    right: 0;
+    width: 30vw;
+    padding-inline: 10px;
+border-radius: 10px;
+
+}
+.chattingArea{
+    position: absolute;
+    bottom: 0;
+}
+
+.chatConatiner{
+
 }

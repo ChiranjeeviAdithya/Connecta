@@ -240,11 +240,15 @@ export default function VideoMeet() {
             }
         }
     }
-    //todo addmessage 
-    let addMessage = () => {
-
-    }
-
+    const addMessage = (data, sender, socketIdSender) => {
+        setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: sender, data: data }
+        ]);
+        if (socketIdSender !== socketIdRef.current) {
+            setNewMessages((prevNewMessages) => prevNewMessages + 1);
+        }
+    };
 
     let connectToSocketServer = () => {
 
@@ -404,7 +408,18 @@ export default function VideoMeet() {
     let handleScreen = () => {
         setScreen(!screen);
     }
+    let handleEndCall = () => {
+        try {
+            let tracks = localVideoref.current.srcObject.getTracks()
+            tracks.forEach(track => track.stop())
+        } catch (e) { }
+        window.location.href = "/"
+    }
 
+    let sendMessage = () => {
+        socketRef.current.emit("chat-message", message, username);
+        setMessage("")
+    }
     return (
         <div>
             {askForUsername === true ?
@@ -417,11 +432,38 @@ export default function VideoMeet() {
                     </div>
                 </div> :
                 <div className={styles.meetVideoContainer}>
+
+                    {showModal ?
+                        <div className={styles.chatroom}>
+                            <div className={styles.chatContainer}>
+                                <h1>Chat</h1>
+                                <div className={styles.chattingDisplay}>
+
+                                    {messages.length !== 0 ? messages.map((item, index) => {
+
+                                        console.log(messages)
+                                        return (
+                                            <div style={{ marginBottom: "20px" }} key={index}>
+                                                <p style={{ fontWeight: "bold" }}>{item.sender}</p>
+                                                <p>{item.data}</p>
+                                            </div>
+                                        )
+                                    }) : <p>No Messages Yet</p>}
+
+
+                                </div>
+                                <div className={styles.chattingArea}>
+                                    <TextField value={message} onChange={e => { setMessage(e.target.value) }} id="outlined-basic" label="Outlined" variant="outlined" />
+                                    <Button onClick={sendMessage} variant='contained'>Send</Button>
+                                </div>
+                            </div>
+
+                        </div> : <></>}
                     <div className={styles.buttonContainers}>
                         <IconButton onClick={handleVideo} style={{ color: "white" }}>
                             {(video === true) ? <VideocamIcon /> : <VideocamOffIcon />}
                         </IconButton>
-                        <IconButton style={{ color: "red" }}>
+                        <IconButton onClick={handleEndCall} style={{ color: "red" }}>
                             <CallEndIcon />
                         </IconButton>
                         <IconButton onClick={handleAudio} style={{ color: "white" }}>
@@ -434,7 +476,7 @@ export default function VideoMeet() {
                             </IconButton> : <></>}
 
                         <Badge badgeContent={newMessages} max={999} color='secondary'>
-                            <IconButton style={{ color: "white" }}>
+                            <IconButton onClick={() => { setModal(!showModal) }} style={{ color: "white" }}>
                                 <ChatIcon />                        </IconButton>
                         </Badge>
                     </div>
