@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import withAuth from '../utils/withAuth'
 import { useNavigate } from 'react-router-dom';
 import "../App.css"
 import { Button, IconButton, TextField } from '@mui/material';
 import RestoreIcon from '@mui/icons-material/Restore';
-
+import { AuthContext } from '../contexts/AuthContext';
 
 
 function HomeComponent() {
@@ -14,7 +14,9 @@ function HomeComponent() {
 
     let [meetingCode, setMeetingCode] = useState("");
 
+    const { addToUserHistory } = useContext(AuthContext);
     let handleJoinVideoCall = async () => {
+        await addToUserHistory(meetingCode)
         navigate(`/${meetingCode}`)
 
     }
@@ -27,7 +29,11 @@ function HomeComponent() {
                     <h3>Apna College Video Call</h3>
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
-                    <IconButton
+                    <IconButton onClick={
+                        () => {
+                            navigate("/history")
+                        }
+                    }
                     >
                         <RestoreIcon />
                         <p>History</p>
